@@ -40,7 +40,13 @@ required_files=(
   skills/brickowl/scripts/brickowl_cli.py
   skills/brickowl/references/openapi/brickowl.yaml
   skills/brickowl/references/prompts/brickowl-tools.txt
+  skills/bricklink/SKILL.md
+  skills/bricklink/scripts/bricklink
+  skills/bricklink/scripts/bricklink_cli.py
+  skills/bricklink/references/openapi/bricklink.yaml
+  skills/bricklink/references/prompts/bricklink-tools.txt
   tests/test_brickowl_cli.py
+  tests/test_bricklink_cli.py
 )
 
 for path in "${required_files[@]}"; do
@@ -59,6 +65,10 @@ done
 
 if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
   python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
+fi
+
+if [[ -f skills/bricklink/scripts/bricklink_cli.py ]]; then
+  python3 -m py_compile skills/bricklink/scripts/bricklink_cli.py || fail "skills/bricklink/scripts/bricklink_cli.py does not compile"
 fi
 
 if [[ -d skills ]]; then
