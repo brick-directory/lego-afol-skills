@@ -27,7 +27,6 @@ check_trailing_newline() {
 required_files=(
   README.md
   AGENTS.md
-  scripts/sync-from-brick-directory.sh
   scripts/validate-skills.sh
   references/SOURCE.md
   references/SHA256SUMS
@@ -36,6 +35,12 @@ required_files=(
   references/openapi/brickowl.yaml
   references/openapi/bricklink.yaml
   references/openapi/brickeconomy.yaml
+  skills/brickowl/SKILL.md
+  skills/brickowl/scripts/brickowl
+  skills/brickowl/scripts/brickowl_cli.py
+  skills/brickowl/references/openapi/brickowl.yaml
+  skills/brickowl/references/prompts/brickowl-tools.txt
+  tests/test_brickowl_cli.py
 )
 
 for path in "${required_files[@]}"; do
@@ -52,6 +57,10 @@ for prompt in \
   check_file_exists "$prompt"
 done
 
+if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
+  python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
+fi
+
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
     rel=${skill#./}
@@ -65,11 +74,11 @@ if [[ -d skills ]]; then
     grep -Eq '^description:[[:space:]]*.+' "$skill" || fail "$rel frontmatter must include description"
     grep -Eq '^version:[[:space:]]*.+' "$skill" || fail "$rel frontmatter must include version"
     grep -Eq '(^|[^A-Z0-9_])[A-Z][A-Z0-9_]{2,}(_[A-Z0-9]+)*($|[^A-Z0-9_])' "$skill" || fail "$rel should document required env vars by name"
-    grep -Eq 'references/(openapi|prompts)/' "$skill" || fail "$rel should link to copied OpenAPI or prompt references"
+    grep -Eq 'references/(openapi|prompts)/' "$skill" || fail "$rel should link to checked-in OpenAPI or prompt references"
     grep -Eiq 'explicit (user )?(intent|approval|confirmation)|require[s]? confirmation|read-only|dry-run' "$skill" || fail "$rel should document write safety / read-only behavior"
   done < <(find skills -type f -name SKILL.md -print0 | sort -z)
 else
-  echo "info: no skills/ directory yet; skipping per-skill checks"
+  fail "missing skills/ directory"
 fi
 
 while IFS= read -r -d '' path; do
@@ -78,10 +87,14 @@ done < <(find . -type f \
   ! -path './.git/*' \
   ! -path './references/openapi/*' \
   ! -path './references/prompts/*' \
+  ! -path './*/references/openapi/*' \
+  ! -path './*/references/prompts/*' \
+  ! -path './*/__pycache__/*' \
+  ! -name '*.pyc' \
   -print0)
 
 if [[ -f references/SHA256SUMS ]]; then
-  sha256sum --check --quiet references/SHA256SUMS || fail "reference checksums are stale; run scripts/sync-from-brick-directory.sh"
+  sha256sum --check --quiet references/SHA256SUMS || fail "reference checksums are stale"
 fi
 
 if (( failures > 0 )); then
