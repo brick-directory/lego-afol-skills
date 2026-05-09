@@ -1,6 +1,6 @@
 # Skill packaging pattern
 
-Use `skills/brickowl/` as the reference implementation for provider-specific LEGO AFOL skills.
+Use `skills/brickowl/` as the reference implementation for provider-specific AFOL skills.
 
 ## Expected package shape
 

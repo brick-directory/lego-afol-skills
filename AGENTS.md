@@ -1,6 +1,6 @@
-# AGENTS.md — lego-afol-skills
+# AGENTS.md — afol-skills
 
-This repository stores agent skills and supporting references for LEGO AFOL integrations.
+This repository stores agent skills and supporting references for AFOL integrations.
 
 ## Source of truth
 
