@@ -71,7 +71,8 @@ if [[ -d skills ]]; then
     if ! compgen -G "skills/$provider/references/prompts/*.txt" > /dev/null; then
       fail "skills/$provider/references/prompts should include prompt reference files"
     fi
-    check_file_exists "tests/test_${provider}_cli.py"
+    test_provider=${provider//-/_}
+    check_file_exists "tests/test_${test_provider}_cli.py"
 
     python3 -m py_compile "skills/$provider/scripts/${provider}_cli.py" || fail "skills/$provider/scripts/${provider}_cli.py does not compile"
 

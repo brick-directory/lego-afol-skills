@@ -25,6 +25,10 @@ This repository is meant to be skills-first: agents should be able to use each i
 ├── scripts/
 │   └── validate-skills.sh             # baseline repo and skill hygiene checks
 ├── skills/
+│   ├── lego-afol/
+│   │   ├── SKILL.md                   # Meta-router over provider skills
+│   │   ├── references/                # Orchestration references bundled with the skill archive
+│   │   └── scripts/                   # Routing/credential-readiness CLI
 │   ├── brickowl/
 │   │   ├── SKILL.md                   # BrickOwl skill
 │   │   ├── references/                # BrickOwl references bundled with the skill archive
@@ -38,6 +42,7 @@ This repository is meant to be skills-first: agents should be able to use each i
 │       ├── references/                # Rebrickable references bundled with the skill archive
 │       └── scripts/                   # Rebrickable CLI wrapper and implementation
 └── tests/
+    ├── test_lego_afol_cli.py          # LEGO AFOL router unit tests
     ├── test_brickowl_cli.py           # BrickOwl CLI unit tests
     ├── test_brickset_cli.py           # Brickset CLI unit tests
     └── test_rebrickable_cli.py        # Rebrickable CLI unit tests
@@ -50,6 +55,18 @@ Provider skills should follow the BrickOwl package shape documented in
 implementation, OpenAPI references, and prompt references under
 `skills/<provider>/`. Repo-global `scripts/` is reserved for repository
 maintenance, not provider runtime CLIs.
+
+## LEGO AFOL meta-router
+
+Use the meta skill when the task is broad and the right provider is not obvious:
+
+```bash
+skills/lego-afol/scripts/lego-afol route "What is set 10236-1 worth?"
+skills/lego-afol/scripts/lego-afol route "Find parts for Millennium Falcon"
+skills/lego-afol/scripts/lego-afol credentials
+```
+
+The meta skill does not call external APIs. It routes agents to the provider skills below and reports credential readiness without printing secret values.
 
 ## BrickOwl CLI
 
