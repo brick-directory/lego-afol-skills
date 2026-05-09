@@ -21,11 +21,14 @@ This repository is meant to be skills-first: agents should be able to use each i
 │   │   └── brickeconomy.yaml
 │   └── prompts/                      # checked-in domain guidance
 ├── scripts/
-│   ├── brickowl                       # BrickOwl CLI wrapper
-│   ├── brickowl_cli.py                # BrickOwl CLI implementation
 │   └── validate-skills.sh             # baseline repo and skill hygiene checks
 ├── skills/
-│   └── brickowl/SKILL.md              # BrickOwl skill
+│   └── brickowl/
+│       ├── SKILL.md                   # BrickOwl skill
+│       ├── references/                # BrickOwl references bundled with the skill archive
+│       └── scripts/
+│           ├── brickowl               # BrickOwl CLI wrapper
+│           └── brickowl_cli.py        # BrickOwl CLI implementation
 └── tests/
     └── test_brickowl_cli.py           # CLI unit tests
 ```
@@ -41,16 +44,16 @@ export BRICKOWL_API_KEY=...
 Read-only examples:
 
 ```bash
-scripts/brickowl user
-scripts/brickowl id-lookup --id 75192-1 --type Set --id-type set_number
-scripts/brickowl catalog-search --query "Millennium Falcon" --type Set --page 1
-scripts/brickowl inventory-list --page 1
+skills/brickowl/scripts/brickowl user
+skills/brickowl/scripts/brickowl id-lookup --id 75192-1 --type Set --id-type set_number
+skills/brickowl/scripts/brickowl catalog-search --query "Millennium Falcon" --type Set --page 1
+skills/brickowl/scripts/brickowl inventory-list --page 1
 ```
 
 Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
 
 ```bash
-scripts/brickowl inventory-create --dry-run --boid 123 --quantity 1 --price 9.99 --condition news
+skills/brickowl/scripts/brickowl inventory-create --dry-run --boid 123 --quantity 1 --price 9.99 --condition news
 ```
 
 ## Validate

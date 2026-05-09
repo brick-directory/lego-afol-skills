@@ -27,8 +27,6 @@ check_trailing_newline() {
 required_files=(
   README.md
   AGENTS.md
-  scripts/brickowl
-  scripts/brickowl_cli.py
   scripts/validate-skills.sh
   references/SOURCE.md
   references/SHA256SUMS
@@ -38,6 +36,10 @@ required_files=(
   references/openapi/bricklink.yaml
   references/openapi/brickeconomy.yaml
   skills/brickowl/SKILL.md
+  skills/brickowl/scripts/brickowl
+  skills/brickowl/scripts/brickowl_cli.py
+  skills/brickowl/references/openapi/brickowl.yaml
+  skills/brickowl/references/prompts/brickowl-tools.txt
   tests/test_brickowl_cli.py
 )
 
@@ -55,8 +57,8 @@ for prompt in \
   check_file_exists "$prompt"
 done
 
-if [[ -f scripts/brickowl_cli.py ]]; then
-  python3 -m py_compile scripts/brickowl_cli.py || fail "scripts/brickowl_cli.py does not compile"
+if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
+  python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
 fi
 
 if [[ -d skills ]]; then
@@ -85,6 +87,8 @@ done < <(find . -type f \
   ! -path './.git/*' \
   ! -path './references/openapi/*' \
   ! -path './references/prompts/*' \
+  ! -path './*/references/openapi/*' \
+  ! -path './*/references/prompts/*' \
   ! -path './*/__pycache__/*' \
   ! -name '*.pyc' \
   -print0)

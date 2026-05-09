@@ -10,7 +10,7 @@ Use this skill when the user asks for BrickOwl catalog lookup, BrickOwl store in
 
 Primary interface: `scripts/brickowl`.
 
-The skill wraps the BrickOwl API directly using checked-in references:
+The skill is self-contained for archive distribution and wraps the BrickOwl API directly using checked-in references inside this skill directory:
 - OpenAPI reference: `references/openapi/brickowl.yaml`
 - Domain guidance: `references/prompts/brickowl-tools.txt`
 - CLI source: `scripts/brickowl_cli.py`
@@ -41,7 +41,7 @@ The CLI handles that split, which is the main reason to use it instead of ad-hoc
 
 ## CLI quick reference
 
-Run commands from the repo root:
+Run commands from this skill directory:
 
 ```bash
 scripts/brickowl --help
