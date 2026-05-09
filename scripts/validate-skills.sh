@@ -78,10 +78,7 @@ while IFS= read -r -d '' script_path; do
   esac
 done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-for cli in \
-  skills/brickowl/scripts/brickowl_cli.py \
-  skills/brickset/scripts/brickset_cli.py \
-  skills/rebrickable/scripts/rebrickable_cli.py; do
+for cli in   skills/brickowl/scripts/brickowl_cli.py   skills/brickset/scripts/brickset_cli.py   skills/rebrickable/scripts/rebrickable_cli.py; do
   if [[ -f "$cli" ]]; then
     python3 -m py_compile "$cli" || fail "$cli does not compile"
   fi
