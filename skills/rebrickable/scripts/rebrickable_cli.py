@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -127,13 +128,17 @@ def redacted_headers(content_type: str | None = None) -> dict[str, str]:
     return headers
 
 
+def redact_private_path(path: str) -> str:
+    return re.sub(r"/users/[^/]+/", "/users/[from REBRICKABLE_USER_TOKEN]/", path)
+
+
 def dry_run(command: str, method: str, path: str, *, fields: dict[str, Any] | None = None, json_payload: Any = None) -> None:
     content_type = "application/json" if json_payload is not None else "application/x-www-form-urlencoded" if fields is not None else None
     payload: dict[str, Any] = {
         "dry_run": True,
         "command": command,
         "method": method,
-        "path": path,
+        "path": redact_private_path(path),
         "headers": redacted_headers(content_type),
     }
     if fields is not None:

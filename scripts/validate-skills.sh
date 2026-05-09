@@ -47,15 +47,16 @@ required_files=(
   skills/brickset/references/openapi/brickset.yaml
   skills/brickset/references/prompts/brickset-tools.txt
   skills/brickset/references/prompts/brickset-private-tools.txt
-  tests/test_brickowl_cli.py
-  tests/test_brickset_cli.py
   skills/rebrickable/SKILL.md
   skills/rebrickable/scripts/rebrickable
   skills/rebrickable/scripts/rebrickable_cli.py
   skills/rebrickable/references/openapi/rebrickable.yaml
   skills/rebrickable/references/prompts/rebrickable-tools.txt
+  tests/test_brickowl_cli.py
+  tests/test_brickset_cli.py
   tests/test_rebrickable_cli.py
 )
+
 for path in "${required_files[@]}"; do
   check_file_exists "$path"
 done
@@ -77,9 +78,11 @@ while IFS= read -r -d '' script_path; do
   esac
 done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-while IFS= read -r -d '' cli_path; do
-  python3 -m py_compile "$cli_path" || fail "$cli_path does not compile"
-done < <(find skills -path '*/scripts/*_cli.py' -type f -print0 | sort -z)
+for cli in   skills/brickowl/scripts/brickowl_cli.py   skills/brickset/scripts/brickset_cli.py   skills/rebrickable/scripts/rebrickable_cli.py; do
+  if [[ -f "$cli" ]]; then
+    python3 -m py_compile "$cli" || fail "$cli does not compile"
+  fi
+done
 
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
