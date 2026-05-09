@@ -40,7 +40,13 @@ required_files=(
   skills/brickowl/scripts/brickowl_cli.py
   skills/brickowl/references/openapi/brickowl.yaml
   skills/brickowl/references/prompts/brickowl-tools.txt
+  skills/rebrickable/SKILL.md
+  skills/rebrickable/scripts/rebrickable
+  skills/rebrickable/scripts/rebrickable_cli.py
+  skills/rebrickable/references/openapi/rebrickable.yaml
+  skills/rebrickable/references/prompts/rebrickable-tools.txt
   tests/test_brickowl_cli.py
+  tests/test_rebrickable_cli.py
 )
 
 for path in "${required_files[@]}"; do
