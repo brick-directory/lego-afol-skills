@@ -41,6 +41,12 @@ required_files=(
   skills/brickowl/references/openapi/brickowl.yaml
   skills/brickowl/references/prompts/brickowl-tools.txt
   tests/test_brickowl_cli.py
+  skills/brickeconomy/SKILL.md
+  skills/brickeconomy/scripts/brickeconomy
+  skills/brickeconomy/scripts/brickeconomy_cli.py
+  skills/brickeconomy/references/openapi/brickeconomy.yaml
+  skills/brickeconomy/references/prompts/brickeconomy-tools.txt
+  tests/test_brickeconomy_cli.py
 )
 
 for path in "${required_files[@]}"; do
@@ -59,6 +65,10 @@ done
 
 if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
   python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
+fi
+
+if [[ -f skills/brickeconomy/scripts/brickeconomy_cli.py ]]; then
+  python3 -m py_compile skills/brickeconomy/scripts/brickeconomy_cli.py || fail "skills/brickeconomy/scripts/brickeconomy_cli.py does not compile"
 fi
 
 if [[ -d skills ]]; then
