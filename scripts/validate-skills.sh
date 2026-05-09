@@ -27,6 +27,7 @@ check_trailing_newline() {
 required_files=(
   README.md
   AGENTS.md
+  docs/skill-packaging-pattern.md
   scripts/validate-skills.sh
   references/SOURCE.md
   references/SHA256SUMS
@@ -56,6 +57,13 @@ for prompt in \
   references/prompts/brickeconomy-tools.txt; do
   check_file_exists "$prompt"
 done
+
+while IFS= read -r -d '' script_path; do
+  case "$script_path" in
+    ./scripts/validate-skills.sh) ;;
+    *) fail "provider runtime scripts belong under skills/<provider>/scripts/, not ${script_path#./}" ;;
+  esac
+done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
 if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
   python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"

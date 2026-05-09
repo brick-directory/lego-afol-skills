@@ -10,6 +10,8 @@ This repository is meant to be skills-first: agents should be able to use each i
 .
 ├── AGENTS.md                         # repo conventions for agents and contributors
 ├── README.md                         # this overview
+├── docs/
+│   └── skill-packaging-pattern.md     # provider skill package template
 ├── references/
 │   ├── SOURCE.md                     # public provenance notes for checked-in references
 │   ├── SHA256SUMS                    # drift detection for checked-in references
@@ -32,6 +34,14 @@ This repository is meant to be skills-first: agents should be able to use each i
 └── tests/
     └── test_brickowl_cli.py           # CLI unit tests
 ```
+
+## Skill packaging pattern
+
+Provider skills should follow the BrickOwl package shape documented in
+`docs/skill-packaging-pattern.md`: keep `SKILL.md`, the runtime CLI wrapper and
+implementation, OpenAPI references, and prompt references under
+`skills/<provider>/`. Repo-global `scripts/` is reserved for repository
+maintenance, not provider runtime CLIs.
 
 ## BrickOwl CLI
 
