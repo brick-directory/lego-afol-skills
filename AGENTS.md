@@ -4,31 +4,31 @@ This repository stores agent skills and supporting references for LEGO AFOL inte
 
 ## Source of truth
 
-- The Brick Directory source repository is the source of truth for integration shape.
-- Copied OpenAPI specs live in `references/openapi/` and must be refreshed with `scripts/sync-from-brick-directory.sh`.
-- Copied MCP/domain prompts live in `references/prompts/` and must be refreshed with the same script.
-- Do not scrape vendor docs or hand-edit copied specs/prompts when Brick Directory already has verified sources.
-- If a spec is missing from Brick Directory, document the gap in the PR instead of inventing endpoint contracts.
+- Checked-in API references live in `references/openapi/`.
+- Checked-in domain guidance lives in `references/prompts/`.
+- Do not scrape vendor docs or hand-edit checked-in references when the existing reference already answers the endpoint shape.
+- If a spec is missing or insufficient, document the gap in the PR instead of inventing endpoint contracts.
+- Skills should provide a repo-local CLI when practical, so agents can execute workflows directly with environment variables.
 
 ## Secrets and credentials
 
 - Never commit API keys, passwords, OAuth tokens, cookies, or real user identifiers.
-- Skills may reference credentials only as environment variables, for example `REBRICKABLE_API_KEY` or `BRICKLINK_TOKEN_SECRET`.
-- Examples must use placeholders such as `$REBRICKABLE_API_KEY`; never paste real values.
+- Skills may reference credentials only as environment variables, for example `BRICKOWL_API_KEY`.
+- Examples must use placeholders such as `$BRICKOWL_API_KEY`; never paste real values.
 - Store local credentials in an ignored `.env` file outside committed docs.
 
 ## Write safety
 
 - Marketplace, inventory, collection, wishlist, order, feedback, coupon, member-note, and other mutating operations must be marked clearly.
 - Skill instructions must require explicit user intent before any external mutation.
+- CLIs should guard mutating operations with a flag such as `--yes` and offer `--dry-run` where useful.
 - Default examples should be read-only. If a write example is necessary, make confirmation boundaries obvious and prefer dry-run language.
 
 ## Repository workflow
 
 - Work on a branch; do not commit directly to `main`.
 - Run `scripts/validate-skills.sh` before committing.
-- Keep copied references in sync with Brick Directory by running `scripts/sync-from-brick-directory.sh <path-to-brick-directory>` instead of manual edits.
-- Commit generated reference updates together with the script or skill change that requires them.
+- Run relevant unit tests before committing CLI changes.
 - Open a pull request for review; do not merge your own PR.
 
 ## Skill conventions

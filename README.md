@@ -1,8 +1,8 @@
 # lego-afol-skills
 
-Agent skills and reference material for LEGO AFOL integrations.
+Agent skills and small CLIs for LEGO AFOL integrations.
 
-This repo is the stable home for Brick Directory-derived skills that help agents work with LEGO data providers such as Rebrickable, Brickset, BrickOwl, BrickLink, and BrickEconomy. The goal is to keep skill UX concise while grounding endpoint details in Brick Directory's verified OpenAPI specs and current MCP prompt guidance.
+This repository is meant to be skills-first: agents should be able to use each integration directly from environment variables and a repo-local CLI, without depending on any separate app.
 
 ## Layout
 
@@ -11,46 +11,66 @@ This repo is the stable home for Brick Directory-derived skills that help agents
 ├── AGENTS.md                         # repo conventions for agents and contributors
 ├── README.md                         # this overview
 ├── references/
-│   ├── SOURCE.md                     # copied-reference mapping
-│   ├── SHA256SUMS                    # drift detection for copied references
-│   ├── openapi/                      # verified OpenAPI specs copied from Brick Directory
+│   ├── SOURCE.md                     # public provenance notes for checked-in references
+│   ├── SHA256SUMS                    # drift detection for checked-in references
+│   ├── openapi/                      # checked-in API references
 │   │   ├── rebrickable.yaml
 │   │   ├── brickset.yaml
 │   │   ├── brickowl.yaml
 │   │   ├── bricklink.yaml
 │   │   └── brickeconomy.yaml
-│   └── prompts/                      # MCP prompt guidance copied from Brick Directory
-└── scripts/
-    ├── sync-from-brick-directory.sh  # refresh copied references from source
-    └── validate-skills.sh            # baseline repo and skill hygiene checks
+│   └── prompts/                      # checked-in domain guidance
+├── scripts/
+│   ├── brickowl                       # BrickOwl CLI wrapper
+│   ├── brickowl_cli.py                # BrickOwl CLI implementation
+│   └── validate-skills.sh             # baseline repo and skill hygiene checks
+├── skills/
+│   └── brickowl/SKILL.md              # BrickOwl skill
+└── tests/
+    └── test_brickowl_cli.py           # CLI unit tests
 ```
 
-Future integration skills should live under `skills/<integration>/SKILL.md`.
+## BrickOwl CLI
 
-## Refresh references
+Set credentials through environment variables:
 
 ```bash
-scripts/sync-from-brick-directory.sh /path/to/brick-directory
+export BRICKOWL_API_KEY=...
 ```
 
-The script copies the verified specs and prompt files, then refreshes `references/SHA256SUMS`. Do not hand-edit files under `references/openapi/` or `references/prompts/`; fix the Brick Directory source or resync from it.
+Read-only examples:
+
+```bash
+scripts/brickowl user
+scripts/brickowl id-lookup --id 75192-1 --type Set --id-type set_number
+scripts/brickowl catalog-search --query "Millennium Falcon" --type Set --page 1
+scripts/brickowl inventory-list --page 1
+```
+
+Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
+
+```bash
+scripts/brickowl inventory-create --dry-run --boid 123 --quantity 1 --price 9.99 --condition news
+```
 
 ## Validate
 
 ```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
 scripts/validate-skills.sh
 ```
 
 Current baseline checks:
 
 - required repo files exist
-- copied OpenAPI specs and key prompt files exist
-- copied reference checksums are current
-- committed text files outside copied references end with a newline
-- any future `skills/**/SKILL.md` files include frontmatter, env-var docs, reference links, and write-safety notes
+- checked-in OpenAPI specs and key prompt files exist
+- checked-in reference checksums are current
+- Python CLI compiles
+- committed text files outside checked-in generated references end with a newline
+- `skills/**/SKILL.md` files include frontmatter, env-var docs, reference links, and write-safety notes
 
 ## Safety rules
 
 - Secrets are referenced only as environment variables; real values are never committed.
-- Mutating marketplace, inventory, collection, wishlist, order, feedback, coupon, or member-note operations must require explicit user intent.
+- Marketplace, inventory, collection, wishlist, order, feedback, coupon, or member-note mutations must require explicit user intent.
 - Read-only examples are preferred; write examples must make the confirmation boundary painfully obvious.
