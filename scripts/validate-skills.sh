@@ -55,7 +55,7 @@ required_files=(
   tests/test_brickowl_cli.py
   tests/test_brickset_cli.py
   tests/test_rebrickable_cli.py
-)
+);
 
 for path in "${required_files[@]}"; do
   check_file_exists "$path"
