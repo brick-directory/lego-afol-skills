@@ -34,6 +34,8 @@ This repository stores agent skills and supporting references for LEGO AFOL inte
 ## Skill conventions
 
 - One integration per skill unless a later orchestration skill intentionally composes multiple integrations.
+- Use `skills/brickowl/` and `docs/skill-packaging-pattern.md` as the template for provider skills: keep `SKILL.md`, runtime CLI files, bundled OpenAPI references, and prompt references under `skills/<provider>/`.
+- Do not put provider runtime scripts in repo-global `scripts/`; reserve that directory for repo maintenance scripts.
 - Every `SKILL.md` must include YAML frontmatter with `name`, `description`, and `version`.
 - Every skill must document required environment variables, read-only smoke checks, write-safety rules, and links to the relevant files under `references/`.
 - Prefer concise, agent-actionable workflows over exhaustive vendor prose.
