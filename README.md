@@ -10,6 +10,8 @@ This repo is the stable home for Brick Directory-derived skills that help agents
 .
 ├── AGENTS.md                         # repo conventions for agents and contributors
 ├── README.md                         # this overview
+├── skills/
+│   └── brickowl/SKILL.md             # BrickOwl API skill
 ├── references/
 │   ├── SOURCE.md                     # copied-reference mapping
 │   ├── SHA256SUMS                    # drift detection for copied references
@@ -25,7 +27,7 @@ This repo is the stable home for Brick Directory-derived skills that help agents
     └── validate-skills.sh            # baseline repo and skill hygiene checks
 ```
 
-Future integration skills should live under `skills/<integration>/SKILL.md`.
+Integration skills live under `skills/<integration>/SKILL.md`.
 
 ## Refresh references
 
