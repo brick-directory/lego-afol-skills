@@ -47,6 +47,11 @@ required_files=(
   skills/brickset/references/openapi/brickset.yaml
   skills/brickset/references/prompts/brickset-tools.txt
   skills/brickset/references/prompts/brickset-private-tools.txt
+  skills/brickeconomy/SKILL.md
+  skills/brickeconomy/scripts/brickeconomy
+  skills/brickeconomy/scripts/brickeconomy_cli.py
+  skills/brickeconomy/references/openapi/brickeconomy.yaml
+  skills/brickeconomy/references/prompts/brickeconomy-tools.txt
   skills/rebrickable/SKILL.md
   skills/rebrickable/scripts/rebrickable
   skills/rebrickable/scripts/rebrickable_cli.py
@@ -54,6 +59,7 @@ required_files=(
   skills/rebrickable/references/prompts/rebrickable-tools.txt
   tests/test_brickowl_cli.py
   tests/test_brickset_cli.py
+  tests/test_brickeconomy_cli.py
   tests/test_rebrickable_cli.py
 );
 
@@ -78,11 +84,9 @@ while IFS= read -r -d '' script_path; do
   esac
 done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-for cli in   skills/brickowl/scripts/brickowl_cli.py   skills/brickset/scripts/brickset_cli.py   skills/rebrickable/scripts/rebrickable_cli.py; do
-  if [[ -f "$cli" ]]; then
-    python3 -m py_compile "$cli" || fail "$cli does not compile"
-  fi
-done
+while IFS= read -r -d '' cli_path; do
+  python3 -m py_compile "$cli_path" || fail "$cli_path does not compile"
+done < <(find skills -path '*/scripts/*_cli.py' -type f -print0 | sort -z)
 
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
