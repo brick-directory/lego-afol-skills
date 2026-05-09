@@ -29,13 +29,18 @@ This repository is meant to be skills-first: agents should be able to use each i
 │   │   ├── SKILL.md                   # BrickOwl skill
 │   │   ├── references/                # BrickOwl references bundled with the skill archive
 │   │   └── scripts/                   # BrickOwl CLI wrapper and implementation
-│   └── brickset/
-│       ├── SKILL.md                   # Brickset skill
-│       ├── references/                # Brickset references bundled with the skill archive
-│       └── scripts/                   # Brickset CLI wrapper and implementation
+│   ├── brickset/
+│   │   ├── SKILL.md                   # Brickset skill
+│   │   ├── references/                # Brickset references bundled with the skill archive
+│   │   └── scripts/                   # Brickset CLI wrapper and implementation
+│   └── rebrickable/
+│       ├── SKILL.md                   # Rebrickable skill
+│       ├── references/                # Rebrickable references bundled with the skill archive
+│       └── scripts/                   # Rebrickable CLI wrapper and implementation
 └── tests/
     ├── test_brickowl_cli.py           # BrickOwl CLI unit tests
-    └── test_brickset_cli.py           # Brickset CLI unit tests
+    ├── test_brickset_cli.py           # Brickset CLI unit tests
+    └── test_rebrickable_cli.py        # Rebrickable CLI unit tests
 ```
 
 ## Skill packaging pattern
@@ -91,6 +96,30 @@ Mutating collection/wishlist commands require explicit `--yes`; inspect with `--
 
 ```bash
 skills/brickset/scripts/brickset collection-set --dry-run --set-id 30142 --own 1 --qty-owned 1
+```
+
+## Rebrickable CLI
+
+Set credentials through environment variables:
+
+```bash
+export REBRICKABLE_API_KEY=...
+export REBRICKABLE_USER_TOKEN=...  # optional; needed for user collection endpoints
+```
+
+Read-only examples:
+
+```bash
+skills/rebrickable/scripts/rebrickable sets --search "Millennium Falcon" --page-size 5
+skills/rebrickable/scripts/rebrickable set --set-num 75192-1
+skills/rebrickable/scripts/rebrickable parts --part-num 3001
+skills/rebrickable/scripts/rebrickable profile
+```
+
+Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
+
+```bash
+skills/rebrickable/scripts/rebrickable add-sets-to-list --dry-run --list-id 123 --sets-json '[{"set_num":"8043-1","quantity":1}]'
 ```
 
 ## Validate
