@@ -13,8 +13,8 @@ This repository stores agent skills and supporting references for LEGO AFOL inte
 ## Secrets and credentials
 
 - Never commit API keys, passwords, OAuth tokens, cookies, or real user identifiers.
-- Skills may reference credentials only as environment variables, for example `BRICKOWL_API_KEY`.
-- Examples must use placeholders such as `$BRICKOWL_API_KEY`; never paste real values.
+- Skills may reference credentials only as environment variables, for example `BRICKOWL_API_KEY` or `BRICKSET_API_KEY`.
+- Examples must use placeholders such as `$BRICKOWL_API_KEY` or `$BRICKSET_API_KEY`; never paste real values.
 - Store local credentials in an ignored `.env` file outside committed docs.
 
 ## Write safety

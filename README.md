@@ -25,14 +25,17 @@ This repository is meant to be skills-first: agents should be able to use each i
 ├── scripts/
 │   └── validate-skills.sh             # baseline repo and skill hygiene checks
 ├── skills/
-│   └── brickowl/
-│       ├── SKILL.md                   # BrickOwl skill
-│       ├── references/                # BrickOwl references bundled with the skill archive
-│       └── scripts/
-│           ├── brickowl               # BrickOwl CLI wrapper
-│           └── brickowl_cli.py        # BrickOwl CLI implementation
+│   ├── brickowl/
+│   │   ├── SKILL.md                   # BrickOwl skill
+│   │   ├── references/                # BrickOwl references bundled with the skill archive
+│   │   └── scripts/                   # BrickOwl CLI wrapper and implementation
+│   └── brickset/
+│       ├── SKILL.md                   # Brickset skill
+│       ├── references/                # Brickset references bundled with the skill archive
+│       └── scripts/                   # Brickset CLI wrapper and implementation
 └── tests/
-    └── test_brickowl_cli.py           # CLI unit tests
+    ├── test_brickowl_cli.py           # BrickOwl CLI unit tests
+    └── test_brickset_cli.py           # Brickset CLI unit tests
 ```
 
 ## Skill packaging pattern
@@ -64,6 +67,30 @@ Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
 
 ```bash
 skills/brickowl/scripts/brickowl inventory-create --dry-run --boid 123 --quantity 1 --price 9.99 --condition news
+```
+
+## Brickset CLI
+
+Set credentials through environment variables:
+
+```bash
+export BRICKSET_API_KEY=...
+export BRICKSET_USER_HASH=...      # optional, for private collection/wishlist/notes flows
+```
+
+Read-only examples:
+
+```bash
+skills/brickset/scripts/brickset details --set-number 10270-1
+skills/brickset/scripts/brickset instructions --set-number 10270-1
+skills/brickset/scripts/brickset images --set-id 30142
+skills/brickset/scripts/brickset reviews --set-id 30142
+```
+
+Mutating collection/wishlist commands require explicit `--yes`; inspect with `--dry-run` first:
+
+```bash
+skills/brickset/scripts/brickset collection-set --dry-run --set-id 30142 --own 1 --qty-owned 1
 ```
 
 ## Validate
