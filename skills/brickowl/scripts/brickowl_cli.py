@@ -209,7 +209,7 @@ def require_any_change(args: argparse.Namespace, field_names: Iterable[str]) -> 
 
 
 def cmd_user(args: argparse.Namespace) -> Any:
-    return client_from_args(args).get("/user", {})
+    return client_from_args(args).get("/user/details", {})
 
 
 def cmd_catalog_search(args: argparse.Namespace) -> Any:

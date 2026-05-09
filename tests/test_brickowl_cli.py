@@ -52,6 +52,19 @@ class BrickOwlCliTests(unittest.TestCase):
         self.assertEqual(query["id"], ["75192-1"])
         self.assertEqual(query["id_type"], ["set_number"])
 
+    def test_user_uses_real_details_endpoint(self) -> None:
+        captured = {}
+
+        def fake_urlopen(request, timeout):
+            captured["url"] = request.full_url
+            return FakeResponse({"username": "tester"})
+
+        with mock.patch.dict(os.environ, {"BRICKOWL_API_KEY": "secret"}, clear=False), mock.patch("urllib.request.urlopen", fake_urlopen), mock.patch("sys.stdout"):
+            rc = brickowl_cli.main(["user"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(urlparse(captured["url"]).path, "/v1/user/details")
+
     def test_post_places_key_in_form_body(self) -> None:
         captured = {}
 

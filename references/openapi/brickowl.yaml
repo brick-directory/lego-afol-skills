@@ -308,7 +308,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WishlistCreateResponse'
 
-  /user:
+  /user/details:
     get:
       tags:
         - User
