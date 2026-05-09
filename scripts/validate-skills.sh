@@ -27,6 +27,7 @@ check_trailing_newline() {
 required_files=(
   README.md
   AGENTS.md
+  docs/skill-packaging-pattern.md
   scripts/validate-skills.sh
   references/SOURCE.md
   references/SHA256SUMS
@@ -40,7 +41,14 @@ required_files=(
   skills/brickowl/scripts/brickowl_cli.py
   skills/brickowl/references/openapi/brickowl.yaml
   skills/brickowl/references/prompts/brickowl-tools.txt
+  skills/brickset/SKILL.md
+  skills/brickset/scripts/brickset
+  skills/brickset/scripts/brickset_cli.py
+  skills/brickset/references/openapi/brickset.yaml
+  skills/brickset/references/prompts/brickset-tools.txt
+  skills/brickset/references/prompts/brickset-private-tools.txt
   tests/test_brickowl_cli.py
+  tests/test_brickset_cli.py
   skills/brickeconomy/SKILL.md
   skills/brickeconomy/scripts/brickeconomy
   skills/brickeconomy/scripts/brickeconomy_cli.py
@@ -48,7 +56,6 @@ required_files=(
   skills/brickeconomy/references/prompts/brickeconomy-tools.txt
   tests/test_brickeconomy_cli.py
 )
-
 for path in "${required_files[@]}"; do
   check_file_exists "$path"
 done
@@ -63,13 +70,16 @@ for prompt in \
   check_file_exists "$prompt"
 done
 
-if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
-  python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
-fi
+while IFS= read -r -d '' script_path; do
+  case "$script_path" in
+    ./scripts/validate-skills.sh) ;;
+    *) fail "provider runtime scripts belong under skills/<provider>/scripts/, not ${script_path#./}" ;;
+  esac
+done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-if [[ -f skills/brickeconomy/scripts/brickeconomy_cli.py ]]; then
-  python3 -m py_compile skills/brickeconomy/scripts/brickeconomy_cli.py || fail "skills/brickeconomy/scripts/brickeconomy_cli.py does not compile"
-fi
+while IFS= read -r -d '' cli_path; do
+  python3 -m py_compile "$cli_path" || fail "$cli_path does not compile"
+done < <(find skills -path '*/scripts/*_cli.py' -type f -print0 | sort -z)
 
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
