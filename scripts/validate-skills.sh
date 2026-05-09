@@ -49,8 +49,13 @@ required_files=(
   skills/brickset/references/prompts/brickset-private-tools.txt
   tests/test_brickowl_cli.py
   tests/test_brickset_cli.py
+  skills/brickeconomy/SKILL.md
+  skills/brickeconomy/scripts/brickeconomy
+  skills/brickeconomy/scripts/brickeconomy_cli.py
+  skills/brickeconomy/references/openapi/brickeconomy.yaml
+  skills/brickeconomy/references/prompts/brickeconomy-tools.txt
+  tests/test_brickeconomy_cli.py
 )
-
 for path in "${required_files[@]}"; do
   check_file_exists "$path"
 done
@@ -72,13 +77,9 @@ while IFS= read -r -d '' script_path; do
   esac
 done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-if [[ -f skills/brickowl/scripts/brickowl_cli.py ]]; then
-  python3 -m py_compile skills/brickowl/scripts/brickowl_cli.py || fail "skills/brickowl/scripts/brickowl_cli.py does not compile"
-fi
-
-if [[ -f skills/brickset/scripts/brickset_cli.py ]]; then
-  python3 -m py_compile skills/brickset/scripts/brickset_cli.py || fail "skills/brickset/scripts/brickset_cli.py does not compile"
-fi
+while IFS= read -r -d '' cli_path; do
+  python3 -m py_compile "$cli_path" || fail "$cli_path does not compile"
+done < <(find skills -path '*/scripts/*_cli.py' -type f -print0 | sort -z)
 
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
