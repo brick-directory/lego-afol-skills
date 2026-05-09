@@ -133,8 +133,31 @@ class RebrickableCliTests(unittest.TestCase):
         urlopen.assert_not_called()
         output = "".join(call.args[0] for call in stdout.write.call_args_list if call.args)
         self.assertIn('"Authorization": "key [from REBRICKABLE_API_KEY]"', output)
+        self.assertIn('"path": "/users/[from REBRICKABLE_USER_TOKEN]/partlists/456/parts/"', output)
         self.assertIn('"part_num": "3001"', output)
+        self.assertNotIn("user-token", output)
         self.assertNotIn("secret", output)
+
+    def test_dry_run_redacts_user_token_path_segment(self) -> None:
+        with mock.patch.dict(os.environ, {}, clear=True), mock.patch("urllib.request.urlopen") as urlopen, mock.patch("sys.stdout") as stdout:
+            rc = rebrickable_cli.main(
+                [
+                    "remove-set-from-list",
+                    "--dry-run",
+                    "--user-token",
+                    "SECRET_USER_TOKEN",
+                    "--list-id",
+                    "123",
+                    "--set-num",
+                    "8043-1",
+                ]
+            )
+
+        self.assertEqual(rc, 0)
+        urlopen.assert_not_called()
+        output = "".join(call.args[0] for call in stdout.write.call_args_list if call.args)
+        self.assertIn('"path": "/users/[from REBRICKABLE_USER_TOKEN]/setlists/123/sets/8043-1/"', output)
+        self.assertNotIn("SECRET_USER_TOKEN", output)
 
     def test_user_command_requires_user_token(self) -> None:
         with mock.patch.dict(os.environ, {"REBRICKABLE_API_KEY": "secret"}, clear=True), mock.patch("urllib.request.urlopen") as urlopen, mock.patch("sys.stderr"):
