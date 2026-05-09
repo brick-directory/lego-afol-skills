@@ -16,6 +16,11 @@ check_file_exists() {
   [[ -f "$path" ]] || fail "missing required file: $path"
 }
 
+check_dir_exists() {
+  local path=$1
+  [[ -d "$path" ]] || fail "missing required directory: $path"
+}
+
 check_trailing_newline() {
   local path=$1
   [[ ! -s "$path" ]] && return 0
@@ -36,37 +41,13 @@ required_files=(
   references/openapi/brickowl.yaml
   references/openapi/bricklink.yaml
   references/openapi/brickeconomy.yaml
-  skills/brickowl/SKILL.md
-  skills/brickowl/scripts/brickowl
-  skills/brickowl/scripts/brickowl_cli.py
-  skills/brickowl/references/openapi/brickowl.yaml
-  skills/brickowl/references/prompts/brickowl-tools.txt
-  skills/brickset/SKILL.md
-  skills/brickset/scripts/brickset
-  skills/brickset/scripts/brickset_cli.py
-  skills/brickset/references/openapi/brickset.yaml
-  skills/brickset/references/prompts/brickset-tools.txt
-  skills/brickset/references/prompts/brickset-private-tools.txt
-  tests/test_brickowl_cli.py
-  tests/test_brickset_cli.py
-  skills/bricklink/SKILL.md
-  skills/bricklink/scripts/bricklink
-  skills/bricklink/scripts/bricklink_cli.py
-  skills/bricklink/references/openapi/bricklink.yaml
-  skills/bricklink/references/prompts/bricklink-tools.txt
-  tests/test_bricklink_cli.py
 )
+
 for path in "${required_files[@]}"; do
   check_file_exists "$path"
 done
 
-for prompt in \
-  references/prompts/rebrickable-tools.txt \
-  references/prompts/brickset-tools.txt \
-  references/prompts/brickset-private-tools.txt \
-  references/prompts/brickowl-tools.txt \
-  references/prompts/bricklink-tools.txt \
-  references/prompts/brickeconomy-tools.txt; do
+for prompt in   references/prompts/rebrickable-tools.txt   references/prompts/brickset-tools.txt   references/prompts/brickset-private-tools.txt   references/prompts/brickowl-tools.txt   references/prompts/bricklink-tools.txt   references/prompts/brickeconomy-tools.txt; do
   check_file_exists "$prompt"
 done
 
@@ -77,13 +58,23 @@ while IFS= read -r -d '' script_path; do
   esac
 done < <(find ./scripts -maxdepth 1 -type f -print0 | sort -z)
 
-while IFS= read -r -d '' cli_path; do
-  python3 -m py_compile "$cli_path" || fail "$cli_path does not compile"
-done < <(find skills -path '*/scripts/*_cli.py' -type f -print0 | sort -z)
-
 if [[ -d skills ]]; then
   while IFS= read -r -d '' skill; do
     rel=${skill#./}
+    provider=${rel#skills/}
+    provider=${provider%%/*}
+
+    check_file_exists "skills/$provider/scripts/$provider"
+    check_file_exists "skills/$provider/scripts/${provider}_cli.py"
+    check_file_exists "skills/$provider/references/openapi/$provider.yaml"
+    check_dir_exists "skills/$provider/references/prompts"
+    if ! compgen -G "skills/$provider/references/prompts/*.txt" > /dev/null; then
+      fail "skills/$provider/references/prompts should include prompt reference files"
+    fi
+    check_file_exists "tests/test_${provider}_cli.py"
+
+    python3 -m py_compile "skills/$provider/scripts/${provider}_cli.py" || fail "skills/$provider/scripts/${provider}_cli.py does not compile"
+
     if ! sed -n '1p' "$skill" | grep -qx -- '---'; then
       fail "$rel must start with YAML frontmatter delimiter"
     fi
@@ -96,22 +87,14 @@ if [[ -d skills ]]; then
     grep -Eq '(^|[^A-Z0-9_])[A-Z][A-Z0-9_]{2,}(_[A-Z0-9]+)*($|[^A-Z0-9_])' "$skill" || fail "$rel should document required env vars by name"
     grep -Eq 'references/(openapi|prompts)/' "$skill" || fail "$rel should link to checked-in OpenAPI or prompt references"
     grep -Eiq 'explicit (user )?(intent|approval|confirmation)|require[s]? confirmation|read-only|dry-run' "$skill" || fail "$rel should document write safety / read-only behavior"
-  done < <(find skills -type f -name SKILL.md -print0 | sort -z)
+  done < <(find skills -mindepth 2 -maxdepth 2 -type f -name SKILL.md -print0 | sort -z)
 else
   fail "missing skills/ directory"
 fi
 
 while IFS= read -r -d '' path; do
   check_trailing_newline "$path"
-done < <(find . -type f \
-  ! -path './.git/*' \
-  ! -path './references/openapi/*' \
-  ! -path './references/prompts/*' \
-  ! -path './*/references/openapi/*' \
-  ! -path './*/references/prompts/*' \
-  ! -path './*/__pycache__/*' \
-  ! -name '*.pyc' \
-  -print0)
+done < <(find . -type f   ! -path './.git/*'   ! -path './references/openapi/*'   ! -path './references/prompts/*'   ! -path './*/references/openapi/*'   ! -path './*/references/prompts/*'   ! -path './*/__pycache__/*'   ! -name '*.pyc'   -print0)
 
 if [[ -f references/SHA256SUMS ]]; then
   sha256sum --check --quiet references/SHA256SUMS || fail "reference checksums are stale"
