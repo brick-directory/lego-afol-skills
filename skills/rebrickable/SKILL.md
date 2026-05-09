@@ -100,7 +100,7 @@ Mutating operations require explicit user confirmation in the current conversati
 
 Stored credentials are not permission. Before any mutation, restate the exact platform, list ID, set number, part number, color ID, quantity, lost-part record, and whether the operation creates, updates, or deletes data. Wait for explicit confirmation such as "yes, add set 8043-1 to Rebrickable list 123".
 
-The CLI enforces this mechanically: mutating commands fail unless `--yes` is passed, and `--dry-run` prints the request shape with the `Authorization` header redacted.
+The CLI enforces this mechanically: mutating commands fail unless `--yes` is passed, and `--dry-run` prints the request shape with the `Authorization` header and `REBRICKABLE_USER_TOKEN` path segment redacted.
 
 If the user asks to "add to my collection" or "show my collection" without naming a platform and Brickset/Rebrickable are both configured, ask which service to use before mutating or reading private collection data. If they explicitly name Rebrickable, use only Rebrickable.
 

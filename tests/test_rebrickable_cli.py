@@ -133,7 +133,9 @@ class RebrickableCliTests(unittest.TestCase):
         urlopen.assert_not_called()
         output = "".join(call.args[0] for call in stdout.write.call_args_list if call.args)
         self.assertIn('"Authorization": "key [from REBRICKABLE_API_KEY]"', output)
+        self.assertIn('"path": "/users/[from REBRICKABLE_USER_TOKEN]/partlists/456/parts/"', output)
         self.assertIn('"part_num": "3001"', output)
+        self.assertNotIn("user-token", output)
         self.assertNotIn("secret", output)
 
     def test_user_command_requires_user_token(self) -> None:
