@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 import urllib.error
 import urllib.parse
@@ -128,17 +127,13 @@ def redacted_headers(content_type: str | None = None) -> dict[str, str]:
     return headers
 
 
-def redact_private_path(path: str) -> str:
-    return re.sub(r"/users/[^/]+/", "/users/[from REBRICKABLE_USER_TOKEN]/", path)
-
-
 def dry_run(command: str, method: str, path: str, *, fields: dict[str, Any] | None = None, json_payload: Any = None) -> None:
     content_type = "application/json" if json_payload is not None else "application/x-www-form-urlencoded" if fields is not None else None
     payload: dict[str, Any] = {
         "dry_run": True,
         "command": command,
         "method": method,
-        "path": redact_private_path(path),
+        "path": path,
         "headers": redacted_headers(content_type),
     }
     if fields is not None:
@@ -428,6 +423,11 @@ def quote(value: str) -> str:
     return urllib.parse.quote(str(value), safe="")
 
 
+def user_path(args: argparse.Namespace, suffix: str) -> str:
+    token = "[from REBRICKABLE_USER_TOKEN]" if getattr(args, "dry_run", False) else quote(user_token(args))
+    return f"/users/{token}/{suffix.lstrip('/')}"
+
+
 def page_params(args: argparse.Namespace, *field_names: str) -> dict[str, Any]:
     params = {"page": args.page, "page_size": args.page_size, "ordering": args.ordering}
     params.update({field: getattr(args, field) for field in field_names})
@@ -459,7 +459,7 @@ def parse_json_array(raw: str, option: str) -> list[Any]:
 
 
 def cmd_create_set_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/setlists/"
+    path = user_path(args, "setlists/")
     fields = {"name": args.name, "is_buildable": args.is_buildable}
     if not ensure_write_allowed(args, "POST", path, fields=fields):
         return None
@@ -468,7 +468,7 @@ def cmd_create_set_list(args: argparse.Namespace) -> Any:
 
 def cmd_update_set_list(args: argparse.Namespace) -> Any:
     require_any(args, ["name", "is_buildable"])
-    path = f"/users/{quote(user_token(args))}/setlists/{quote(args.list_id)}/"
+    path = user_path(args, f"setlists/{quote(args.list_id)}/")
     fields = {"name": args.name, "is_buildable": args.is_buildable}
     if not ensure_write_allowed(args, "PATCH", path, fields=fields):
         return None
@@ -476,7 +476,7 @@ def cmd_update_set_list(args: argparse.Namespace) -> Any:
 
 
 def cmd_delete_set_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/setlists/{quote(args.list_id)}/"
+    path = user_path(args, f"setlists/{quote(args.list_id)}/")
     if not ensure_write_allowed(args, "DELETE", path):
         return None
     return client_from_args(args).delete(path)
@@ -484,7 +484,7 @@ def cmd_delete_set_list(args: argparse.Namespace) -> Any:
 
 def cmd_add_sets_to_list(args: argparse.Namespace) -> Any:
     payload = parse_json_array(args.sets_json, "--sets-json")
-    path = f"/users/{quote(user_token(args))}/setlists/{quote(args.list_id)}/sets/"
+    path = user_path(args, f"setlists/{quote(args.list_id)}/sets/")
     if not ensure_write_allowed(args, "POST", path, json_payload=payload):
         return None
     return client_from_args(args).post_json(path, payload)
@@ -492,7 +492,7 @@ def cmd_add_sets_to_list(args: argparse.Namespace) -> Any:
 
 def cmd_update_set_in_list(args: argparse.Namespace) -> Any:
     require_any(args, ["quantity", "include_spares"])
-    path = f"/users/{quote(user_token(args))}/setlists/{quote(args.list_id)}/sets/{quote(args.set_num)}/"
+    path = user_path(args, f"setlists/{quote(args.list_id)}/sets/{quote(args.set_num)}/")
     fields = {"quantity": args.quantity, "include_spares": args.include_spares}
     if not ensure_write_allowed(args, "PATCH", path, fields=fields):
         return None
@@ -500,14 +500,14 @@ def cmd_update_set_in_list(args: argparse.Namespace) -> Any:
 
 
 def cmd_remove_set_from_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/setlists/{quote(args.list_id)}/sets/{quote(args.set_num)}/"
+    path = user_path(args, f"setlists/{quote(args.list_id)}/sets/{quote(args.set_num)}/")
     if not ensure_write_allowed(args, "DELETE", path):
         return None
     return client_from_args(args).delete(path)
 
 
 def cmd_create_part_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/partlists/"
+    path = user_path(args, "partlists/")
     fields = {"name": args.name, "is_buildable": args.is_buildable}
     if not ensure_write_allowed(args, "POST", path, fields=fields):
         return None
@@ -515,14 +515,14 @@ def cmd_create_part_list(args: argparse.Namespace) -> Any:
 
 
 def cmd_delete_part_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/partlists/{quote(args.list_id)}/"
+    path = user_path(args, f"partlists/{quote(args.list_id)}/")
     if not ensure_write_allowed(args, "DELETE", path):
         return None
     return client_from_args(args).delete(path)
 
 
 def cmd_add_part_to_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/partlists/{quote(args.list_id)}/parts/"
+    path = user_path(args, f"partlists/{quote(args.list_id)}/parts/")
     fields = {"part_num": args.part_num, "color_id": args.color_id, "quantity": args.quantity}
     if not ensure_write_allowed(args, "POST", path, fields=fields):
         return None
@@ -530,7 +530,7 @@ def cmd_add_part_to_list(args: argparse.Namespace) -> Any:
 
 
 def cmd_update_part_in_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/partlists/{quote(args.list_id)}/parts/{quote(args.part_num)}/{quote(args.color_id)}/"
+    path = user_path(args, f"partlists/{quote(args.list_id)}/parts/{quote(args.part_num)}/{quote(args.color_id)}/")
     fields = {"quantity": args.quantity}
     if not ensure_write_allowed(args, "PUT", path, fields=fields):
         return None
@@ -538,14 +538,14 @@ def cmd_update_part_in_list(args: argparse.Namespace) -> Any:
 
 
 def cmd_remove_part_from_list(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/partlists/{quote(args.list_id)}/parts/{quote(args.part_num)}/{quote(args.color_id)}/"
+    path = user_path(args, f"partlists/{quote(args.list_id)}/parts/{quote(args.part_num)}/{quote(args.color_id)}/")
     if not ensure_write_allowed(args, "DELETE", path):
         return None
     return client_from_args(args).delete(path)
 
 
 def cmd_add_lost_part(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/lost_parts/"
+    path = user_path(args, "lost_parts/")
     fields = {"inv_part_id": args.inv_part_id, "lost_quantity": args.lost_quantity}
     if not ensure_write_allowed(args, "POST", path, fields=fields):
         return None
@@ -553,7 +553,7 @@ def cmd_add_lost_part(args: argparse.Namespace) -> Any:
 
 
 def cmd_remove_lost_part(args: argparse.Namespace) -> Any:
-    path = f"/users/{quote(user_token(args))}/lost_parts/{quote(args.lost_part_id)}/"
+    path = user_path(args, f"lost_parts/{quote(args.lost_part_id)}/")
     if not ensure_write_allowed(args, "DELETE", path):
         return None
     return client_from_args(args).delete(path)
