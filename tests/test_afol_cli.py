@@ -7,32 +7,32 @@ from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CLI_PATH = ROOT / "skills" / "lego-afol" / "scripts" / "lego-afol_cli.py"
+CLI_PATH = ROOT / "skills" / "afol" / "scripts" / "afol_cli.py"
 
-spec = importlib.util.spec_from_file_location("lego_afol_cli", CLI_PATH)
-lego_afol_cli = importlib.util.module_from_spec(spec)
+spec = importlib.util.spec_from_file_location("afol_cli", CLI_PATH)
+afol_cli = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
-sys.modules[spec.name] = lego_afol_cli
-spec.loader.exec_module(lego_afol_cli)
+sys.modules[spec.name] = afol_cli
+spec.loader.exec_module(afol_cli)
 
 
-class LegoAfolCliTest(unittest.TestCase):
+class AfolCliTest(unittest.TestCase):
     def test_routes_valuation_to_brickeconomy_first(self):
-        result = lego_afol_cli.route("What is set 10236-1 worth?")
+        result = afol_cli.route("What is set 10236-1 worth?")
 
         self.assertEqual(result["providers"][0], "brickeconomy")
         self.assertIn("bricklink", result["providers"])
         self.assertIn("valuation", result["reason"])
 
     def test_routes_catalog_questions_to_rebrickable_first(self):
-        result = lego_afol_cli.route("Find parts for Millennium Falcon")
+        result = afol_cli.route("Find parts for Millennium Falcon")
 
         self.assertEqual(result["providers"][0], "rebrickable")
         self.assertIn("brickset", result["providers"])
 
     def test_credentials_redact_values(self):
         with mock.patch.dict(os.environ, {"BRICKECONOMY_API_KEY": "secret-value"}, clear=True):
-            rows = lego_afol_cli.credentials()
+            rows = afol_cli.credentials()
 
         brickeconomy = next(row for row in rows if row["provider"] == "brickeconomy")
         rebrickable = next(row for row in rows if row["provider"] == "rebrickable")

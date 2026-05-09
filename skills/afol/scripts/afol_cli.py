@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic router for the LEGO AFOL meta skill."""
+"""Deterministic router for the AFOL meta skill."""
 
 from __future__ import annotations
 
@@ -90,7 +90,7 @@ def notes_for(providers: Iterable[str]) -> list[str]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Route LEGO AFOL tasks to provider skills.")
+    parser = argparse.ArgumentParser(description="Route AFOL collector tasks to provider skills.")
     sub = parser.add_subparsers(dest="command", required=True)
 
     route_parser = sub.add_parser("route", help="Suggest provider skills for a user task")

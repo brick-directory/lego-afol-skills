@@ -1,6 +1,6 @@
-# LEGO AFOL router prompt
+# AFOL router prompt
 
-Use this prompt reference for the `lego-afol` meta skill. The meta skill chooses provider skills; it does not replace them.
+Use this prompt reference for the `afol` meta skill. The meta skill chooses provider skills; it does not replace them.
 
 ## Decision matrix
 

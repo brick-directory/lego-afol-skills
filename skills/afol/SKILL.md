@@ -1,19 +1,19 @@
 ---
-name: lego-afol
-description: Use this orchestration skill to choose the right LEGO AFOL provider skill for catalog lookup, marketplace pricing, collection management, valuation, and cross-provider workflows.
+name: afol
+description: Use this orchestration skill to choose the right AFOL provider skill for catalog lookup, marketplace pricing, collection management, valuation, and cross-provider workflows.
 version: 1.0.0
 ---
 
-# LEGO AFOL meta skill
+# AFOL meta skill
 
-Use this skill when the user asks a broad LEGO collector question and it is not obvious which provider-specific skill should handle it. This is the human-facing router over the provider skills, not another vendor API wrapper.
+Use this skill when the user asks a broad AFOL collector question and it is not obvious which provider-specific skill should handle it. This is the human-facing router over the provider skills, not another vendor API wrapper.
 
-Primary interface: `scripts/lego-afol`.
+Primary interface: `scripts/afol`.
 
 The skill composes the checked-in provider skills and keeps orchestration guidance inside this skill directory:
-- Orchestration reference: `references/prompts/lego-afol-router.txt`
-- CLI source: `scripts/lego-afol_cli.py`
-- Metadata-only OpenAPI placeholder: `references/openapi/lego-afol.yaml`
+- Orchestration reference: `references/prompts/afol-router.txt`
+- CLI source: `scripts/afol_cli.py`
+- Metadata-only OpenAPI placeholder: `references/openapi/afol.yaml`
 
 Do not route through the Brick Directory app by default. Prefer the official provider skills directly. Brick Directory may be useful later for app-specific rendered reports or internal cross-provider mappings, but it is not the canonical data layer for this skill.
 
@@ -31,7 +31,7 @@ Do not route through the Brick Directory app by default. Prefer the official pro
 
 ## Credential readiness
 
-Use `scripts/lego-afol credentials` to check which capabilities are unlocked without printing secret values.
+Use `scripts/afol credentials` to check which capabilities are unlocked without printing secret values.
 
 Provider env vars:
 
@@ -55,11 +55,11 @@ Never print, commit, log, or paste real credentials. Report only whether each pr
 Run commands from this skill directory:
 
 ```bash
-scripts/lego-afol --help
-scripts/lego-afol route "What is set 10236-1 worth?"
-scripts/lego-afol route "Find parts for Millennium Falcon"
-scripts/lego-afol route "Compare BrickLink and BrickOwl price for 3001 red"
-scripts/lego-afol credentials
+scripts/afol --help
+scripts/afol route "What is set 10236-1 worth?"
+scripts/afol route "Find parts for Millennium Falcon"
+scripts/afol route "Compare BrickLink and BrickOwl price for 3001 red"
+scripts/afol credentials
 ```
 
 The CLI does not call provider APIs. It gives deterministic routing and credential-readiness hints so an agent can load/use the correct provider skill next.
@@ -128,9 +128,9 @@ Never checkout, order, buy, sell, update inventory, delete listings, post feedba
 Local, no-network checks:
 
 ```bash
-python3 -m py_compile scripts/lego-afol_cli.py
-scripts/lego-afol route "What is set 10236-1 worth?"
-scripts/lego-afol credentials
+python3 -m py_compile scripts/afol_cli.py
+scripts/afol route "What is set 10236-1 worth?"
+scripts/afol credentials
 ```
 
 Provider live smoke tests belong in the provider skills. This meta skill should not call external APIs itself.
