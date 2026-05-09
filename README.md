@@ -10,6 +10,8 @@ This repository is meant to be skills-first: agents should be able to use each i
 .
 ├── AGENTS.md                         # repo conventions for agents and contributors
 ├── README.md                         # this overview
+├── docs/
+│   └── skill-packaging-pattern.md     # provider skill package template
 ├── references/
 │   ├── SOURCE.md                     # public provenance notes for checked-in references
 │   ├── SHA256SUMS                    # drift detection for checked-in references
@@ -26,19 +28,28 @@ This repository is meant to be skills-first: agents should be able to use each i
 │   ├── brickowl/
 │   │   ├── SKILL.md                   # BrickOwl skill
 │   │   ├── references/                # BrickOwl references bundled with the skill archive
-│   │   └── scripts/
-│   │       ├── brickowl               # BrickOwl CLI wrapper
-│   │       └── brickowl_cli.py        # BrickOwl CLI implementation
+│   │   └── scripts/                   # BrickOwl CLI wrapper and implementation
+│   ├── brickset/
+│   │   ├── SKILL.md                   # Brickset skill
+│   │   ├── references/                # Brickset references bundled with the skill archive
+│   │   └── scripts/                   # Brickset CLI wrapper and implementation
 │   └── rebrickable/
 │       ├── SKILL.md                   # Rebrickable skill
 │       ├── references/                # Rebrickable references bundled with the skill archive
-│       └── scripts/
-│           ├── rebrickable            # Rebrickable CLI wrapper
-│           └── rebrickable_cli.py     # Rebrickable CLI implementation
+│       └── scripts/                   # Rebrickable CLI wrapper and implementation
 └── tests/
     ├── test_brickowl_cli.py           # BrickOwl CLI unit tests
+    ├── test_brickset_cli.py           # Brickset CLI unit tests
     └── test_rebrickable_cli.py        # Rebrickable CLI unit tests
 ```
+
+## Skill packaging pattern
+
+Provider skills should follow the BrickOwl package shape documented in
+`docs/skill-packaging-pattern.md`: keep `SKILL.md`, the runtime CLI wrapper and
+implementation, OpenAPI references, and prompt references under
+`skills/<provider>/`. Repo-global `scripts/` is reserved for repository
+maintenance, not provider runtime CLIs.
 
 ## BrickOwl CLI
 
@@ -61,6 +72,30 @@ Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
 
 ```bash
 skills/brickowl/scripts/brickowl inventory-create --dry-run --boid 123 --quantity 1 --price 9.99 --condition news
+```
+
+## Brickset CLI
+
+Set credentials through environment variables:
+
+```bash
+export BRICKSET_API_KEY=...
+export BRICKSET_USER_HASH=...      # optional, for private collection/wishlist/notes flows
+```
+
+Read-only examples:
+
+```bash
+skills/brickset/scripts/brickset details --set-number 10270-1
+skills/brickset/scripts/brickset instructions --set-number 10270-1
+skills/brickset/scripts/brickset images --set-id 30142
+skills/brickset/scripts/brickset reviews --set-id 30142
+```
+
+Mutating collection/wishlist commands require explicit `--yes`; inspect with `--dry-run` first:
+
+```bash
+skills/brickset/scripts/brickset collection-set --dry-run --set-id 30142 --own 1 --qty-owned 1
 ```
 
 ## Rebrickable CLI
