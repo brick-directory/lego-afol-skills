@@ -107,11 +107,11 @@ jobs:
             **Install from ClawHub / OpenClaw:**
             ```bash
             npx clawhub@latest install afol
-            npx clawhub@latest install brickeconomy
-            npx clawhub@latest install bricklink
-            npx clawhub@latest install brickowl
-            npx clawhub@latest install brickset
-            npx clawhub@latest install rebrickable
+            npx clawhub@latest install afol-brickeconomy
+            npx clawhub@latest install afol-bricklink
+            npx clawhub@latest install afol-brickowl
+            npx clawhub@latest install afol-brickset
+            npx clawhub@latest install afol-rebrickable
             ```
 
             **Install with Hermes from GitHub:**
@@ -146,21 +146,40 @@ jobs:
           display_name() {
             case "$1" in
               afol) echo "AFOL" ;;
-              brickeconomy) echo "BrickEconomy" ;;
-              bricklink) echo "BrickLink" ;;
-              brickowl) echo "BrickOwl" ;;
-              brickset) echo "Brickset" ;;
-              rebrickable) echo "Rebrickable" ;;
+              brickeconomy) echo "AFOL BrickEconomy" ;;
+              bricklink) echo "AFOL BrickLink" ;;
+              brickowl) echo "AFOL BrickOwl" ;;
+              brickset) echo "AFOL Brickset" ;;
+              rebrickable) echo "AFOL Rebrickable" ;;
               *) echo "$1" ;;
             esac
+          }
+
+          publish_slug() {
+            case "$1" in
+              afol) echo "afol" ;;
+              *) echo "afol-$1" ;;
+            esac
+          }
+
+          skill_version_exists() {
+            local slug=$1
+            clawhub inspect "$slug" 2>/dev/null | grep -Eq "^Latest:[[:space:]]+$VERSION$"
           }
 
           for work_dir in "$RELEASE_WORK"/*; do
             [[ -d "$work_dir" ]] || continue
             skill="$(basename "$work_dir")"
+            slug="$(publish_slug "$skill")"
             name="$(display_name "$skill")"
+
+            if skill_version_exists "$slug"; then
+              echo "Skipping $slug@$VERSION; already published"
+              continue
+            fi
+
             clawhub skill publish "$work_dir" \
-              --slug "$skill" \
+              --slug "$slug" \
               --name "$name" \
               --version "$VERSION" \
               --changelog "Release ${GITHUB_REF_NAME:-v$VERSION}" \
