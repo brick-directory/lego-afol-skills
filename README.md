@@ -139,6 +139,17 @@ Mutating commands require explicit `--yes`; inspect with `--dry-run` first:
 skills/rebrickable/scripts/rebrickable add-sets-to-list --dry-run --list-id 123 --sets-json '[{"set_num":"8043-1","quantity":1}]'
 ```
 
+## Release
+
+Pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml`. The workflow validates the repo, bundles every `skills/<name>/` directory as its own zip, creates a GitHub release, and publishes each skill separately to ClawHub using the `CLAWHUB_TOKEN` action secret.
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Published ClawHub slugs currently match the skill directory names: `afol`, `brickeconomy`, `bricklink`, `brickowl`, `brickset`, and `rebrickable`.
+
 ## Validate
 
 ```bash
