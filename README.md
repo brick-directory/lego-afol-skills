@@ -148,7 +148,7 @@ git tag v1.2.3
 git push origin v1.2.3
 ```
 
-Published ClawHub slugs currently match the skill directory names: `afol`, `brickeconomy`, `bricklink`, `brickowl`, `brickset`, and `rebrickable`.
+Published ClawHub slugs are namespaced to avoid collisions with existing provider skills: `afol`, `afol-brickeconomy`, `afol-bricklink`, `afol-brickowl`, `afol-brickset`, and `afol-rebrickable`.
 
 ## Validate
 
