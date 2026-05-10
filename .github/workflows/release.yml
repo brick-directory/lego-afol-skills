@@ -62,16 +62,19 @@ jobs:
 
             python3 - "$work_dir/SKILL.md" "$VERSION" <<'PY'
           import pathlib
-          import re
           import sys
 
           path = pathlib.Path(sys.argv[1])
           version = sys.argv[2]
-          text = path.read_text()
-          updated = re.sub(r'(?m)^version:\s*.*$', f'version: {version}', text, count=1)
-          if updated == text:
+          lines = path.read_text().splitlines(keepends=True)
+          for index, line in enumerate(lines):
+              if line.startswith('version:'):
+                  newline = '\n' if line.endswith('\n') else ''
+                  lines[index] = f'version: {version}{newline}'
+                  break
+          else:
               raise SystemExit(f'No version field found in {path}')
-          path.write_text(updated)
+          path.write_text(''.join(lines))
           PY
 
             (cd "$work_dir" && zip -qr "$GITHUB_WORKSPACE/dist/${skill}.zip" . \
